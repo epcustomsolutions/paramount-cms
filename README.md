@@ -15,7 +15,7 @@ A Django-based claims management web app for a public adjusting company. Adjuste
 
 ## Features
 
-- **Clients** — full CRUD with contact info, address, alerts
+- **Clients** — full CRUD with contact info, address, and adjuster notes
 - **Claims** — linked to clients; track claim number, status, insurance company, date of loss, description
   - **Notes** — timestamped notes on each claim, logged by the current user
   - **Documents** — upload/download PDF, Word, Excel files (stored in Postgres)

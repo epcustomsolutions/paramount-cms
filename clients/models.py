@@ -7,8 +7,8 @@ class Client(models.Model):
     phone = models.CharField(max_length=50, blank=True)
     email = models.EmailField(blank=True)
     address = models.TextField(blank=True)
-    alerts = models.TextField(
-        "Alerts",
+    notes = models.TextField(
+        "Notes",
         blank=True,
     )
 

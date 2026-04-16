@@ -6,13 +6,13 @@ from .models import Client
 class ClientForm(forms.ModelForm):
     class Meta:
         model = Client
-        fields = ["first_name", "last_name", "phone", "email", "address", "alerts"]
+        fields = ["first_name", "last_name", "phone", "email", "address", "notes"]
         labels = {
-            "alerts": "Alerts",
+            "notes": "Notes",
         }
         widgets = {
             "address": forms.Textarea(attrs={"rows": 3}),
-            "alerts": forms.Textarea(attrs={"rows": 3}),
+            "notes": forms.Textarea(attrs={"rows": 3}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -21,7 +21,7 @@ class ClientForm(forms.ModelForm):
             w = self.fields[name].widget
             w.attrs.setdefault("class", "")
             w.attrs["class"] = (w.attrs["class"] + " form-control").strip()
-        for name in ("address", "alerts"):
+        for name in ("address", "notes"):
             w = self.fields[name].widget
             w.attrs.setdefault("class", "")
             w.attrs["class"] = (w.attrs["class"] + " form-control").strip()

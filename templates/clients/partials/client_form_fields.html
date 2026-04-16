@@ -30,10 +30,10 @@
 </div>
 
 <div class="mb-0">
-  <label class="form-label fw-medium" for="id_alerts">Alerts</label>
-  {% if form.alerts.help_text %}
-    <p class="app-modal-subtitle mb-2">{{ form.alerts.help_text }}</p>
+  <label class="form-label fw-medium" for="id_notes">Notes</label>
+  {% if form.notes.help_text %}
+    <p class="app-modal-subtitle mb-2">{{ form.notes.help_text }}</p>
   {% endif %}
-  {{ form.alerts }}
-  {% if form.alerts.errors %}<div class="app-form-error">{{ form.alerts.errors }}</div>{% endif %}
+  {{ form.notes }}
+  {% if form.notes.errors %}<div class="app-form-error">{{ form.notes.errors }}</div>{% endif %}
 </div>

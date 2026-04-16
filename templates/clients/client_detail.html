@@ -34,20 +34,6 @@
       </div>
     </div>
 
-    {% if client.alerts %}
-      <div class="app-alerts-callout mb-4" role="status">
-        <div class="app-alerts-callout__inner">
-          <span class="app-alerts-callout__icon" aria-hidden="true">
-            <i class="bi bi-exclamation-triangle-fill"></i>
-          </span>
-          <div class="app-alerts-callout__content min-w-0">
-            <div class="app-alerts-callout__label">Alerts</div>
-            <p class="app-alerts-callout__text mb-0">{{ client.alerts|linebreaksbr }}</p>
-          </div>
-        </div>
-      </div>
-    {% endif %}
-
     <div class="row g-4">
       <div class="col-lg-6">
         <div class="app-card h-100">
@@ -83,6 +69,15 @@
                 <div class="text-secondary small fw-semibold text-uppercase mb-1">Address</div>
                 {% if client.address %}
                   <div class="text-break" style="white-space: pre-wrap;">{{ client.address }}</div>
+                {% else %}
+                  <div class="text-muted">—</div>
+                {% endif %}
+              </div>
+
+              <div>
+                <div class="text-secondary small fw-semibold text-uppercase mb-1">Notes</div>
+                {% if client.notes %}
+                  <div style="white-space: pre-wrap;">{{ client.notes }}</div>
                 {% else %}
                   <div class="text-muted">—</div>
                 {% endif %}
