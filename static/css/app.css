@@ -555,3 +555,88 @@ div.dataTables_wrapper div.dataTables_paginate .paginate_button.disabled:hover {
   z-index: 2000 !important;
 }
 
+/* Claim detail: file input — align native "Choose file" with filename area + Upload button */
+.claim-document-upload .input-group {
+  align-items: stretch;
+}
+
+.claim-document-upload .input-group .form-control[type="file"] {
+  min-height: 2.5rem;
+  padding-top: 0.375rem;
+  padding-bottom: 0.375rem;
+  line-height: 1.5;
+}
+
+.claim-document-upload .input-group .form-control[type="file"]::file-selector-button {
+  margin-right: 0.75rem;
+  padding: 0.375rem 0.75rem;
+  height: 1.75rem;
+  box-sizing: border-box;
+  border: 0;
+  border-radius: var(--app-radius-sm);
+  background-color: var(--bs-tertiary-bg, #e9ecef);
+  color: var(--bs-body-color);
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.25;
+  cursor: pointer;
+}
+
+.claim-document-upload .input-group .form-control[type="file"]::-webkit-file-upload-button {
+  margin-right: 0.75rem;
+  padding: 0.375rem 0.75rem;
+  height: 1.75rem;
+  box-sizing: border-box;
+  border: 0;
+  border-radius: var(--app-radius-sm);
+  background-color: var(--bs-tertiary-bg, #e9ecef);
+  color: var(--bs-body-color);
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.25;
+  cursor: pointer;
+}
+
+.claim-document-upload .input-group > .btn {
+  min-height: 2.5rem;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Claim detail: documents list — cap height and fade bottom to cue scrolling. */
+.claim-documents-scroll-outer {
+  position: relative;
+  min-height: 0;
+}
+
+.claim-documents-scroll {
+  max-height: 13rem;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.claim-documents-bottom-fade {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1.75rem;
+  pointer-events: none;
+  z-index: 2;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0),
+    var(--bs-body-bg, #fff)
+  );
+}
+
+@media (max-width: 767.98px) {
+  .claim-documents-scroll {
+    max-height: none;
+  }
+
+  .claim-documents-bottom-fade {
+    display: none;
+  }
+}
+

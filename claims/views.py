@@ -51,20 +51,7 @@ def claim_detail(request, pk: int):
     claim = get_object_or_404(Claim.objects.select_related("client"), pk=pk)
     notes = claim.notes.select_related("created_by").all()
     documents = claim.documents.select_related("uploaded_by").all()
-    note_form = ClaimNoteForm()
     document_form = ClaimDocumentForm()
-
-    if request.method == "POST":
-        action = request.POST.get("action", "")
-        if action == "add_note":
-            note_form = ClaimNoteForm(request.POST)
-            if note_form.is_valid():
-                ClaimNote.objects.create(
-                    claim=claim,
-                    content=note_form.cleaned_data["content"],
-                    created_by=request.user,
-                )
-                return redirect("claims:claim-detail", pk=claim.pk)
 
     return render(
         request,
@@ -73,10 +60,53 @@ def claim_detail(request, pk: int):
             "claim": claim,
             "notes": notes,
             "documents": documents,
-            "note_form": note_form,
             "document_form": document_form,
         },
     )
+
+
+@login_required
+def claim_note_create(request, pk: int):
+    claim = get_object_or_404(Claim.objects.select_related("client"), pk=pk)
+    htmx = _is_htmx(request)
+    post_url = reverse("claims:claim-note-create", args=[claim.pk])
+
+    if request.method == "POST":
+        note_form = ClaimNoteForm(request.POST)
+        if note_form.is_valid():
+            ClaimNote.objects.create(
+                claim=claim,
+                content=note_form.cleaned_data["content"],
+                created_by=request.user,
+            )
+            if htmx:
+                notes = claim.notes.select_related("created_by").all()
+                response = render(
+                    request,
+                    "claims/partials/claim_notes_list_oob.html",
+                    {"notes": notes},
+                )
+                response["HX-Reswap"] = "none"
+                response["HX-Trigger"] = "closeNoteModal"
+                return response
+            return redirect("claims:claim-detail", pk=claim.pk)
+        if htmx:
+            return render(
+                request,
+                "claims/partials/claim_note_modal.html",
+                {"claim": claim, "note_form": note_form, "post_url": post_url},
+            )
+    else:
+        note_form = ClaimNoteForm()
+
+    if htmx:
+        return render(
+            request,
+            "claims/partials/claim_note_modal.html",
+            {"claim": claim, "note_form": note_form, "post_url": post_url},
+        )
+
+    return redirect("claims:claim-detail", pk=claim.pk)
 
 
 def _locked_client_from_post(request):

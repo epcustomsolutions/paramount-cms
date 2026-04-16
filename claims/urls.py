@@ -10,6 +10,7 @@ urlpatterns = [
     path("new/", views.claim_create, name="claim-create"),
     path("<int:pk>/edit/", views.claim_edit, name="claim-edit"),
     path("<int:pk>/delete/", views.claim_delete, name="claim-delete"),
+    path("<int:pk>/notes/add/", views.claim_note_create, name="claim-note-create"),
     path("<int:pk>/documents/upload/", views.claim_document_upload, name="claim-document-upload"),
     path(
         "documents/<int:pk>/download/",

@@ -1,0 +1,7 @@
+{# OOB swap target for HTMX claim notes list refresh. Expects: notes #}
+<div
+  id="claim-notes-list"
+  hx-swap-oob="innerHTML:#claim-notes-list"
+>
+  {% include "claims/partials/claim_notes_list.html" %}
+</div>

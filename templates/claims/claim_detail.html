@@ -90,17 +90,17 @@
             method="post"
             enctype="multipart/form-data"
             action="{% url 'claims:claim-document-upload' claim.id %}"
-            class="mb-3"
+            class="mb-3 claim-document-upload"
           >
             {% csrf_token %}
-            <div class="input-group input-group-sm">
+            <div class="input-group">
               <input
                 type="file"
                 name="file"
-                class="form-control form-control-sm"
+                class="form-control"
                 accept=".pdf,.doc,.docx,.xls,.xlsx"
               />
-              <button type="submit" class="btn btn-outline-primary btn-sm">Upload</button>
+              <button type="submit" class="btn btn-outline-primary" disabled>Upload</button>
             </div>
             {% if document_form.file.errors %}
               <div class="app-form-error">{{ document_form.file.errors }}</div>
@@ -108,33 +108,38 @@
           </form>
 
           {% if documents %}
-            <div class="list-group list-group-flush app-list-surface flex-grow-1">
-              {% for doc in documents %}
-                <div class="list-group-item px-3 py-2 d-flex align-items-center justify-content-between gap-2">
-                  <div class="min-w-0 flex-grow-1">
-                    <a
-                      href="{% url 'claims:claim-document-download' doc.id %}"
-                      class="fw-semibold text-decoration-none text-truncate d-block"
-                    >
-                      <i class="bi bi-file-earmark me-1" aria-hidden="true"></i>{{ doc.filename }}
-                    </a>
-                    <div class="small text-muted">
-                      {{ doc.uploaded_at|date:"M j, Y g:i A" }}
-                      {% if doc.uploaded_by %} &middot; {{ doc.uploaded_by.username }}{% endif %}
+            <div class="claim-documents-scroll-outer">
+              <div class="list-group list-group-flush app-list-surface flex-grow-1 claim-documents-scroll">
+                {% for doc in documents %}
+                  <div class="list-group-item px-3 py-2 d-flex align-items-center justify-content-between gap-2">
+                    <div class="min-w-0 flex-grow-1">
+                      <a
+                        href="{% url 'claims:claim-document-download' doc.id %}"
+                        class="fw-semibold text-decoration-none text-truncate d-block"
+                      >
+                        <i class="bi bi-file-earmark me-1" aria-hidden="true"></i>{{ doc.filename }}
+                      </a>
+                      <div class="small text-muted">
+                        {{ doc.uploaded_at|date:"M j, Y g:i A" }}
+                        {% if doc.uploaded_by %} &middot; {{ doc.uploaded_by.username }}{% endif %}
+                      </div>
                     </div>
+                    <form method="post" action="{% url 'claims:claim-document-delete' doc.id %}">
+                      {% csrf_token %}
+                      <button
+                        type="submit"
+                        class="btn btn-outline-danger btn-sm"
+                        onclick="return confirm('Delete this document?')"
+                      >
+                        <i class="bi bi-trash" aria-hidden="true"></i>
+                      </button>
+                    </form>
                   </div>
-                  <form method="post" action="{% url 'claims:claim-document-delete' doc.id %}">
-                    {% csrf_token %}
-                    <button
-                      type="submit"
-                      class="btn btn-outline-danger btn-sm"
-                      onclick="return confirm('Delete this document?')"
-                    >
-                      <i class="bi bi-trash" aria-hidden="true"></i>
-                    </button>
-                  </form>
-                </div>
-              {% endfor %}
+                {% endfor %}
+              </div>
+              {% if documents|length > 3 %}
+                <div class="claim-documents-bottom-fade" aria-hidden="true"></div>
+              {% endif %}
             </div>
           {% else %}
             <div class="app-empty-state flex-grow-1 d-flex flex-column align-items-center justify-content-center text-center">
@@ -148,40 +153,24 @@
 
   <div class="app-card mt-4">
     <div class="app-card-body">
-      <h2 class="app-card-title">Notes</h2>
+      <div class="app-section-header mb-3">
+        <h2 class="app-card-title mb-0">Notes</h2>
+        <button
+          type="button"
+          class="btn btn-primary btn-sm"
+          hx-get="{% url 'claims:claim-note-create' claim.id %}"
+          hx-target="#note-modal-inner"
+          hx-swap="innerHTML"
+          data-bs-toggle="modal"
+          data-bs-target="#note-modal"
+        >
+          Add Note
+        </button>
+      </div>
 
-      <form method="post" class="mb-4">
-        {% csrf_token %}
-        <input type="hidden" name="action" value="add_note" />
-        <div class="mb-2">
-          <label class="form-label fw-medium" for="{{ note_form.content.id_for_label }}">Add a Note</label>
-          {{ note_form.content }}
-          {% if note_form.content.errors %}
-            <div class="app-form-error">{{ note_form.content.errors }}</div>
-          {% endif %}
-        </div>
-        <button type="submit" class="btn btn-primary btn-sm">Save Note</button>
-      </form>
-
-      <hr />
-
-      {% if notes %}
-        <div class="vstack gap-3 mt-3">
-          {% for note in notes %}
-            <div class="app-panel app-panel--compact">
-              <div class="d-flex justify-content-between align-items-start mb-1">
-                <span class="small text-muted">
-                  {{ note.created_at|date:"M j, Y g:i A" }}
-                  {% if note.created_by %} &middot; {{ note.created_by.username }}{% endif %}
-                </span>
-              </div>
-              <div style="white-space: pre-wrap;">{{ note.content }}</div>
-            </div>
-          {% endfor %}
-        </div>
-      {% else %}
-        <p class="text-secondary mb-0">No notes yet.</p>
-      {% endif %}
+      <div id="claim-notes-list">
+        {% include "claims/partials/claim_notes_list.html" %}
+      </div>
     </div>
   </div>
 
@@ -197,6 +186,18 @@
     </div>
   </div>
 
+  <div
+    class="modal fade"
+    id="note-modal"
+    tabindex="-1"
+    aria-labelledby="note-modal-label"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-dialog-scrollable">
+      <div class="modal-content" id="note-modal-inner"></div>
+    </div>
+  </div>
+
   <script>
     (function () {
       document.addEventListener(
@@ -209,6 +210,33 @@
         },
         true
       );
+
+      document.addEventListener(
+        "closeNoteModal",
+        function () {
+          var el = document.getElementById("note-modal");
+          if (!el) return;
+          var inst = window.bootstrap.Modal.getInstance(el);
+          if (inst) inst.hide();
+        },
+        true
+      );
+
+      var uploadForms = document.querySelectorAll(".claim-document-upload");
+      uploadForms.forEach(function (form) {
+        var fileInput = form.querySelector('input[type="file"][name="file"]');
+        var submitButton = form.querySelector('button[type="submit"]');
+        if (!fileInput || !submitButton) {
+          return;
+        }
+
+        var syncUploadButton = function () {
+          submitButton.disabled = !(fileInput.files && fileInput.files.length > 0);
+        };
+
+        syncUploadButton();
+        fileInput.addEventListener("change", syncUploadButton);
+      });
     })();
   </script>
 {% endblock %}
