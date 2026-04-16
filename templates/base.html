@@ -27,10 +27,19 @@
       <div class="container py-2" style="max-width: var(--app-max-width);">
         <div class="d-flex align-items-center justify-content-between gap-2 flex-wrap">
           <div class="d-flex align-items-center gap-3 flex-wrap min-w-0">
-            <div class="fw-bold brand text-truncate">Paramount CMS</div>
+            <a class="fw-bold brand text-truncate text-decoration-none text-reset" href="{% url 'dashboard' %}">
+              Paramount CMS
+            </a>
 
-            {% with ns=request.resolver_match.namespace %}
+            {% with ns=request.resolver_match.namespace url_name=request.resolver_match.url_name %}
               <nav class="d-flex gap-1 flex-wrap align-items-center">
+                <a
+                  class="nav-link p-0 {% if not ns and url_name == 'dashboard' %}active{% endif %}"
+                  href="{% url 'dashboard' %}"
+                  {% if not ns and url_name == 'dashboard' %}aria-current="page"{% endif %}
+                >
+                  Dashboard
+                </a>
                 <a
                   class="nav-link p-0 {% if ns == 'scheduling' %}active{% endif %}"
                   href="{% url 'scheduling:schedule' %}"
