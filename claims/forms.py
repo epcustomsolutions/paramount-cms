@@ -21,7 +21,8 @@ class ClaimForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["client"].widget.attrs["class"] = "form-select"
+        self.fields["client"].widget.attrs["class"] = "form-select app-tom-select"
+        self.fields["client"].widget.attrs["data-placeholder"] = "Search by client name…"
         self.fields["client"].empty_label = ""
         self.fields["status"].widget.attrs["class"] = "form-select"
         for name in ("claim_number", "insurance_company"):
