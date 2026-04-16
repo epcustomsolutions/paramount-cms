@@ -20,6 +20,9 @@
 <div class="mb-3">
   <label class="form-label fw-medium" for="id_claim_number">Claim Number</label>
   {{ form.claim_number }}
+  {% if form.claim_number.help_text %}
+    <p class="app-modal-subtitle mb-1 mt-1">{{ form.claim_number.help_text }}</p>
+  {% endif %}
   {% if form.claim_number.errors %}<div class="app-form-error">{{ form.claim_number.errors }}</div>{% endif %}
 </div>
 

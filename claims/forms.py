@@ -33,6 +33,25 @@ class ClaimForm(forms.ModelForm):
             w.attrs.setdefault("class", "")
             w.attrs["class"] = (w.attrs["class"] + " form-control").strip()
 
+        # Claim number is always system-generated and read-only for users.
+        if self.instance and self.instance.pk:
+            generated_number = self.instance.claim_number
+        else:
+            generated_number = Claim.next_claim_number()
+        self.fields["claim_number"].initial = generated_number
+        self.fields["claim_number"].required = False
+        self.fields["claim_number"].disabled = True
+        self.fields["claim_number"].widget.attrs["readonly"] = "readonly"
+
+    def save(self, commit=True):
+        claim = super().save(commit=False)
+        if not claim.pk:
+            # Ignore client-side displayed value and generate server-side.
+            claim.claim_number = ""
+        if commit:
+            claim.save()
+        return claim
+
 
 class ClaimNoteForm(forms.Form):
     content = forms.CharField(

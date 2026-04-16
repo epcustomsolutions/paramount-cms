@@ -1,5 +1,6 @@
 from django.conf import settings
-from django.db import models
+from django.db import IntegrityError, models
+from django.utils import timezone
 
 from clients.models import Client
 
@@ -32,6 +33,41 @@ class Claim(models.Model):
 
     def __str__(self) -> str:
         return f"{self.claim_number} ({self.client.full_name})"
+
+    @classmethod
+    def next_claim_number(cls, for_date=None) -> str:
+        """
+        Generate the next claim number in CLM-YYYY-MM-VVV format.
+        VVV increments within each year/month bucket.
+        """
+        claim_date = for_date or timezone.localdate()
+        prefix = f"CLM-{claim_date.year:04d}-{claim_date.month:02d}-"
+        existing_numbers = cls.objects.filter(
+            claim_number__startswith=prefix
+        ).values_list("claim_number", flat=True)
+
+        max_version = -1
+        for number in existing_numbers:
+            suffix = number.rsplit("-", 1)[-1]
+            if suffix.isdigit():
+                max_version = max(max_version, int(suffix))
+
+        return f"{prefix}{max_version + 1:03d}"
+
+    def save(self, *args, **kwargs):
+        # Auto-generate claim number when creating records.
+        if self.pk or self.claim_number:
+            return super().save(*args, **kwargs)
+
+        # Handle rare concurrent creates that pick the same next number.
+        for _ in range(5):
+            self.claim_number = self.next_claim_number()
+            try:
+                return super().save(*args, **kwargs)
+            except IntegrityError:
+                self.claim_number = ""
+
+        raise IntegrityError("Unable to allocate a unique claim number.")
 
 
 class ClaimNote(models.Model):
