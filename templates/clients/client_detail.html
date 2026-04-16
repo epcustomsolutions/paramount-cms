@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+
+{% block title %}{{ client.full_name }}{% endblock %}
+
+{% block content %}
+  <div class="client-detail-page">
+    <div class="app-section-header align-items-start mb-4">
+      <div class="min-w-0">
+        <h1 class="app-page-title mb-1 text-truncate">{{ client.full_name }}</h1>
+      </div>
+      <div class="app-action-row flex-shrink-0">
+        <button
+          type="button"
+          class="btn btn-primary"
+          hx-get="{% url 'clients:client-edit' client.id %}"
+          hx-target="#client-modal-inner"
+          hx-swap="innerHTML"
+          data-bs-toggle="modal"
+          data-bs-target="#client-modal"
+        >
+          Edit Client
+        </button>
+        <button
+          type="button"
+          class="btn btn-outline-danger"
+          hx-get="{% url 'clients:client-delete' client.id %}"
+          hx-target="#client-modal-inner"
+          hx-swap="innerHTML"
+          data-bs-toggle="modal"
+          data-bs-target="#client-modal"
+        >
+          Delete Client
+        </button>
+      </div>
+    </div>
+
+    {% if client.alerts %}
+      <div class="app-alerts-callout mb-4" role="status">
+        <div class="app-alerts-callout__inner">
+          <span class="app-alerts-callout__icon" aria-hidden="true">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+          </span>
+          <div class="app-alerts-callout__content min-w-0">
+            <div class="app-alerts-callout__label">Alerts</div>
+            <p class="app-alerts-callout__text mb-0">{{ client.alerts|linebreaksbr }}</p>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+
+    <div class="row g-4">
+      <div class="col-lg-6">
+        <div class="app-card h-100">
+          <div class="app-card-body">
+            <h2 class="app-card-title">Client Info</h2>
+
+            <div class="vstack gap-4">
+              <div>
+                <div class="text-secondary small fw-semibold text-uppercase mb-1">Name</div>
+                <div class="fs-5 fw-medium">{{ client.full_name }}</div>
+              </div>
+
+              <div class="row g-4">
+                <div class="col-sm-6">
+                  <div class="text-secondary small fw-semibold text-uppercase mb-1">Phone</div>
+                  {% if client.phone %}
+                    <div><a href="tel:{{ client.phone }}">{{ client.phone }}</a></div>
+                  {% else %}
+                    <div class="text-muted">—</div>
+                  {% endif %}
+                </div>
+                <div class="col-sm-6">
+                  <div class="text-secondary small fw-semibold text-uppercase mb-1">Email</div>
+                  {% if client.email %}
+                    <div class="text-break"><a href="mailto:{{ client.email }}">{{ client.email }}</a></div>
+                  {% else %}
+                    <div class="text-muted">—</div>
+                  {% endif %}
+                </div>
+              </div>
+
+              <div>
+                <div class="text-secondary small fw-semibold text-uppercase mb-1">Address</div>
+                {% if client.address %}
+                  <div class="text-break" style="white-space: pre-wrap;">{{ client.address }}</div>
+                {% else %}
+                  <div class="text-muted">—</div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-6">
+        <div class="app-card h-100">
+          <div
+            class="app-card-body d-flex flex-column"
+            id="client-claims-panel"
+          >
+            {% include "clients/partials/client_claims_panel_content.html" %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="modal fade"
+      id="claim-modal"
+      tabindex="-1"
+      aria-labelledby="claim-modal-label"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content" id="claim-modal-inner"></div>
+      </div>
+    </div>
+
+    <div
+      class="modal fade"
+      id="client-modal"
+      tabindex="-1"
+      aria-labelledby="client-modal-label"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content" id="client-modal-inner"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      document.addEventListener(
+        "closeClaimModal",
+        function () {
+          var el = document.getElementById("claim-modal");
+          if (!el) return;
+          var inst = window.bootstrap.Modal.getInstance(el);
+          if (inst) inst.hide();
+        },
+        true
+      );
+    })();
+  </script>
+{% endblock %}

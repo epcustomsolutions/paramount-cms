@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}{% if mode == "edit" %}Edit Appointment{% else %}New Appointment{% endif %}{% endblock %}
+
+{% block content %}
+  <div class="appointment-form-page">
+    <div class="app-section-header align-items-end mb-4">
+      <div>
+        <h1 class="app-page-title mb-1">
+          {% if mode == "edit" %}Edit Appointment{% else %}New Appointment{% endif %}
+        </h1>
+        <p class="text-secondary mb-0">
+          {% if mode == "edit" %}
+            Update the visit, then save. Changes apply to the schedule immediately after saving.
+          {% else %}
+            Choose the client and time, then add visit details on the right.
+          {% endif %}
+        </p>
+      </div>
+      <a class="btn btn-outline-secondary" href="{% url 'scheduling:schedule' %}">Back to Schedule</a>
+    </div>
+
+    {% if form.non_field_errors %}
+      <div class="alert alert-danger" role="alert">
+        {{ form.non_field_errors }}
+      </div>
+    {% endif %}
+
+    <form method="post" class="appointment-form app-card">
+      <div class="app-card-body">
+        {% csrf_token %}
+
+        {% include "scheduling/partials/appointment_form_fields.html" %}
+
+        <hr class="my-4 my-lg-5 opacity-25" />
+
+        <div class="d-flex flex-wrap align-items-center gap-2 gap-sm-3">
+          <button type="submit" class="btn btn-primary px-4">Save Changes</button>
+          {% if mode == "edit" and appointment %}
+            <a
+              class="btn btn-outline-danger ms-sm-auto"
+              href="{% url 'scheduling:appointment-delete' appointment.id %}"
+            >
+              Delete Appointment
+            </a>
+          {% endif %}
+        </div>
+      </div>
+    </form>
+  </div>
+{% endblock %}

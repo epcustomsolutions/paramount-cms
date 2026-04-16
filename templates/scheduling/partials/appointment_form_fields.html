@@ -1,0 +1,79 @@
+{# Expects: form #}
+<div class="row g-4 g-xl-5">
+  <div class="col-lg-6">
+    <div class="app-panel h-100">
+      <h3 class="app-panel-title">Who &amp; When</h3>
+
+      <div class="mb-3">
+        <label class="form-label fw-medium" for="id_client">Client</label>
+        {{ form.client }}
+        {% if form.client.errors %}
+          <div class="app-form-error">{{ form.client.errors }}</div>
+        {% endif %}
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label fw-medium" for="id_claim">Claim</label>
+        {{ form.claim }}
+        {% if form.claim.errors %}
+          <div class="app-form-error">{{ form.claim.errors }}</div>
+        {% endif %}
+      </div>
+
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label fw-medium" for="id_start">Start</label>
+          {{ form.start }}
+          {% if form.start.errors %}
+            <div class="app-form-error">{{ form.start.errors }}</div>
+          {% endif %}
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-medium" for="id_end">End</label>
+          {{ form.end }}
+          {% if form.end.errors %}
+            <div class="app-form-error">{{ form.end.errors }}</div>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="mb-0 mt-3">
+        <label class="form-label fw-medium" for="id_status">Status</label>
+        {{ form.status }}
+        {% if form.status.errors %}
+          <div class="app-form-error">{{ form.status.errors }}</div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-6">
+    <div class="app-panel h-100">
+      <h3 class="app-panel-title">Appointment Details</h3>
+
+      <div class="mb-3">
+        <label class="form-label fw-medium" for="id_location">Location / Address</label>
+        {{ form.location }}
+        {% if form.location.errors %}
+          <div class="app-form-error">{{ form.location.errors }}</div>
+        {% endif %}
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label fw-medium" for="id_reason">Reason</label>
+        {{ form.reason }}
+        {% if form.reason.errors %}
+          <div class="app-form-error">{{ form.reason.errors }}</div>
+        {% endif %}
+      </div>
+
+      <div class="mb-0">
+        <label class="form-label fw-medium" for="id_internal_notes">Internal Notes</label>
+        {{ form.internal_notes }}
+        {% if form.internal_notes.errors %}
+          <div class="app-form-error">{{ form.internal_notes.errors }}</div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>

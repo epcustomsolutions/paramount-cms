@@ -1,0 +1,7 @@
+{# OOB swap target for HTMX claims panel refresh #}
+<div
+  id="client-claims-panel"
+  hx-swap-oob="innerHTML:#client-claims-panel"
+>
+  {% include "clients/partials/client_claims_panel_content.html" %}
+</div>

@@ -1,0 +1,29 @@
+{# Expects: form, mode, post_url, show_client_select, client_for_display #}
+<div class="modal-header border-bottom-0 pb-0">
+  <h2 class="modal-title h5 mb-0" id="claim-modal-label">
+    {% if mode == "edit" %}Edit Claim{% else %}New Claim{% endif %}
+  </h2>
+  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<form
+  method="post"
+  class="app-modal-form"
+  hx-post="{{ post_url }}"
+  hx-target="#claim-modal-inner"
+  hx-swap="innerHTML"
+>
+  {% csrf_token %}
+  <div class="modal-body pt-2">
+    {% if form.non_field_errors %}
+      <div class="alert alert-danger py-2 mb-3">{{ form.non_field_errors }}</div>
+    {% endif %}
+    {% include "claims/partials/claim_form_fields.html" with show_client_select=show_client_select client_for_display=client_for_display %}
+  </div>
+  <div class="modal-footer border-top-0 pt-0">
+    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+    <button type="submit" class="btn btn-primary">
+      <span class="spinner-border spinner-border-sm htmx-indicator me-2" aria-hidden="true"></span>
+      Save
+    </button>
+  </div>
+</form>

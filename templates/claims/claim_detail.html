@@ -1,0 +1,214 @@
+{% extends "base.html" %}
+
+{% block title %}Claim {{ claim.claim_number }}{% endblock %}
+
+{% block content %}
+  <div class="app-section-header align-items-start mb-4">
+    <div class="min-w-0">
+      <h1 class="app-page-title mb-1 text-truncate">Claim {{ claim.claim_number }}</h1>
+      <p class="text-secondary mb-0">
+        Client: <a href="{% url 'clients:client-detail' claim.client.id %}">{{ claim.client.full_name }}</a>
+      </p>
+    </div>
+    <div class="app-action-row flex-shrink-0">
+      <button
+        type="button"
+        class="btn btn-primary"
+        hx-get="{% url 'claims:claim-edit' claim.id %}?source=detail"
+        hx-target="#claim-modal-inner"
+        hx-swap="innerHTML"
+        data-bs-toggle="modal"
+        data-bs-target="#claim-modal"
+      >
+        Edit Claim
+      </button>
+      <button
+        type="button"
+        class="btn btn-outline-danger"
+        hx-get="{% url 'claims:claim-delete' claim.id %}?source=detail"
+        hx-target="#claim-modal-inner"
+        hx-swap="innerHTML"
+        data-bs-toggle="modal"
+        data-bs-target="#claim-modal"
+      >
+        Delete Claim
+      </button>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-lg-6">
+      <div class="app-card h-100">
+        <div class="app-card-body">
+          <h2 class="app-card-title">Claim Info</h2>
+          <div class="vstack gap-4">
+            <div class="row g-4">
+              <div class="col-sm-6">
+                <div class="text-secondary small fw-semibold text-uppercase mb-1">Claim Number</div>
+                <div class="fs-5 fw-medium">{{ claim.claim_number }}</div>
+              </div>
+              <div class="col-sm-6">
+                <div class="text-secondary small fw-semibold text-uppercase mb-1">Status</div>
+                <div class="fw-medium">{{ claim.get_status_display }}</div>
+              </div>
+            </div>
+            <div class="row g-4">
+              <div class="col-sm-6">
+                <div class="text-secondary small fw-semibold text-uppercase mb-1">Insurance Company</div>
+                <div>{{ claim.insurance_company|default:"—" }}</div>
+              </div>
+              <div class="col-sm-6">
+                <div class="text-secondary small fw-semibold text-uppercase mb-1">Date of Loss</div>
+                <div>
+                  {% if claim.date_of_loss %}
+                    {{ claim.date_of_loss|date:"M j, Y" }}
+                  {% else %}
+                    <span class="text-muted">—</span>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+            {% if claim.description %}
+              <div>
+                <div class="text-secondary small fw-semibold text-uppercase mb-1">Description</div>
+                <div style="white-space: pre-wrap;">{{ claim.description }}</div>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-6">
+      <div class="app-card h-100">
+        <div class="app-card-body d-flex flex-column">
+          <div class="app-section-header mb-3">
+            <h2 class="app-card-title mb-0">Documents</h2>
+          </div>
+
+          <form
+            method="post"
+            enctype="multipart/form-data"
+            action="{% url 'claims:claim-document-upload' claim.id %}"
+            class="mb-3"
+          >
+            {% csrf_token %}
+            <div class="input-group input-group-sm">
+              <input
+                type="file"
+                name="file"
+                class="form-control form-control-sm"
+                accept=".pdf,.doc,.docx,.xls,.xlsx"
+              />
+              <button type="submit" class="btn btn-outline-primary btn-sm">Upload</button>
+            </div>
+            {% if document_form.file.errors %}
+              <div class="app-form-error">{{ document_form.file.errors }}</div>
+            {% endif %}
+          </form>
+
+          {% if documents %}
+            <div class="list-group list-group-flush app-list-surface flex-grow-1">
+              {% for doc in documents %}
+                <div class="list-group-item px-3 py-2 d-flex align-items-center justify-content-between gap-2">
+                  <div class="min-w-0 flex-grow-1">
+                    <a
+                      href="{% url 'claims:claim-document-download' doc.id %}"
+                      class="fw-semibold text-decoration-none text-truncate d-block"
+                    >
+                      <i class="bi bi-file-earmark me-1" aria-hidden="true"></i>{{ doc.filename }}
+                    </a>
+                    <div class="small text-muted">
+                      {{ doc.uploaded_at|date:"M j, Y g:i A" }}
+                      {% if doc.uploaded_by %} &middot; {{ doc.uploaded_by.username }}{% endif %}
+                    </div>
+                  </div>
+                  <form method="post" action="{% url 'claims:claim-document-delete' doc.id %}">
+                    {% csrf_token %}
+                    <button
+                      type="submit"
+                      class="btn btn-outline-danger btn-sm"
+                      onclick="return confirm('Delete this document?')"
+                    >
+                      <i class="bi bi-trash" aria-hidden="true"></i>
+                    </button>
+                  </form>
+                </div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="app-empty-state flex-grow-1 d-flex flex-column align-items-center justify-content-center text-center">
+              <p class="text-secondary mb-0 small">No documents uploaded yet.</p>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="app-card mt-4">
+    <div class="app-card-body">
+      <h2 class="app-card-title">Notes</h2>
+
+      <form method="post" class="mb-4">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="add_note" />
+        <div class="mb-2">
+          <label class="form-label fw-medium" for="{{ note_form.content.id_for_label }}">Add a Note</label>
+          {{ note_form.content }}
+          {% if note_form.content.errors %}
+            <div class="app-form-error">{{ note_form.content.errors }}</div>
+          {% endif %}
+        </div>
+        <button type="submit" class="btn btn-primary btn-sm">Save Note</button>
+      </form>
+
+      <hr />
+
+      {% if notes %}
+        <div class="vstack gap-3 mt-3">
+          {% for note in notes %}
+            <div class="app-panel app-panel--compact">
+              <div class="d-flex justify-content-between align-items-start mb-1">
+                <span class="small text-muted">
+                  {{ note.created_at|date:"M j, Y g:i A" }}
+                  {% if note.created_by %} &middot; {{ note.created_by.username }}{% endif %}
+                </span>
+              </div>
+              <div style="white-space: pre-wrap;">{{ note.content }}</div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="text-secondary mb-0">No notes yet.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <div
+    class="modal fade"
+    id="claim-modal"
+    tabindex="-1"
+    aria-labelledby="claim-modal-label"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content" id="claim-modal-inner"></div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      document.addEventListener(
+        "closeClaimModal",
+        function () {
+          var el = document.getElementById("claim-modal");
+          if (!el) return;
+          var inst = window.bootstrap.Modal.getInstance(el);
+          if (inst) inst.hide();
+        },
+        true
+      );
+    })();
+  </script>
+{% endblock %}

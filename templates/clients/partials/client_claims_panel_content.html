@@ -1,0 +1,90 @@
+{# Expects: client, claims #}
+<div class="app-section-header mb-4">
+  <h2 class="app-card-title mb-0">Claims</h2>
+  <button
+    type="button"
+    class="btn btn-sm btn-primary"
+    hx-get="{% url 'claims:claim-create' %}?client={{ client.id }}"
+    hx-target="#claim-modal-inner"
+    hx-swap="innerHTML"
+    data-bs-toggle="modal"
+    data-bs-target="#claim-modal"
+  >
+    Add Claim
+  </button>
+</div>
+
+{% if claims %}
+  <div class="list-group list-group-flush app-list-surface flex-grow-1">
+    {% for claim in claims %}
+      <div
+        class="list-group-item px-3 py-3 d-flex flex-column flex-sm-row align-items-stretch align-items-sm-center justify-content-between gap-3"
+      >
+        <div class="min-w-0 flex-grow-1">
+          <a
+            class="fw-semibold text-decoration-none d-inline-block mb-1"
+            href="{% url 'claims:claim-detail' claim.id %}"
+          >
+            {{ claim.claim_number }}
+          </a>
+          <div class="small text-muted">
+            {{ claim.get_status_display }}
+            {% if claim.insurance_company %}
+              &middot; {{ claim.insurance_company }}
+            {% endif %}
+            {% if claim.date_of_loss %}
+              &middot; Loss: {{ claim.date_of_loss|date:"M j, Y" }}
+            {% endif %}
+          </div>
+        </div>
+        <div class="d-flex flex-wrap gap-2 flex-shrink-0 align-items-center">
+          <a
+            class="btn btn-outline-primary btn-sm"
+            href="{% url 'claims:claim-detail' claim.id %}"
+          >
+            View
+          </a>
+          <button
+            type="button"
+            class="btn btn-outline-secondary btn-sm"
+            hx-get="{% url 'claims:claim-edit' claim.id %}"
+            hx-target="#claim-modal-inner"
+            hx-swap="innerHTML"
+            data-bs-toggle="modal"
+            data-bs-target="#claim-modal"
+          >
+            Edit
+          </button>
+          <button
+            type="button"
+            class="btn btn-outline-danger btn-sm"
+            hx-get="{% url 'claims:claim-delete' claim.id %}"
+            hx-target="#claim-modal-inner"
+            hx-swap="innerHTML"
+            data-bs-toggle="modal"
+            data-bs-target="#claim-modal"
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <div
+    class="app-empty-state flex-grow-1 d-flex flex-column align-items-center justify-content-center text-center"
+  >
+    <p class="text-secondary mb-3 mb-sm-4">No claims registered for this client yet.</p>
+    <button
+      type="button"
+      class="btn btn-primary"
+      hx-get="{% url 'claims:claim-create' %}?client={{ client.id }}"
+      hx-target="#claim-modal-inner"
+      hx-swap="innerHTML"
+      data-bs-toggle="modal"
+      data-bs-target="#claim-modal"
+    >
+      Add First Claim
+    </button>
+  </div>
+{% endif %}

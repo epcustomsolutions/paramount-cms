@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Tools{% endblock %}
+
+{% block content %}
+  <div class="app-section-header">
+    <h1 class="app-page-title">Tools</h1>
+  </div>
+  <div class="row row-cols-1 row-cols-md-2 g-3">
+    <div class="col">
+      <div class="app-card h-100">
+        <div class="app-card-body">
+          <h5 class="app-card-title">Mileage Tracker</h5>
+          <p class="card-text muted">
+            Record your daily odometer start and end readings (supports multiple trips per day).
+          </p>
+          <a class="btn btn-primary" href="{% url 'tools:mileage-tracker' %}">
+            Open
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+

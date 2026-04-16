@@ -1,0 +1,11 @@
+<select name="claim" id="id_claim" class="form-select">
+  <option value="" {% if not selected_claim_id %}selected{% endif %}>(No Claim)</option>
+  {% for claim in claims %}
+    <option
+      value="{{ claim.id }}"
+      {% if selected_claim_id and selected_claim_id|stringformat:"s" == claim.id|stringformat:"s" %}selected{% endif %}
+    >
+      {{ claim.claim_number }}
+    </option>
+  {% endfor %}
+</select>

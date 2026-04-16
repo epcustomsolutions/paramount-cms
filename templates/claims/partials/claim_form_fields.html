@@ -1,0 +1,49 @@
+{# Expects: form, show_client_select (default true), client_for_display when not show_client_select #}
+{% if show_client_select %}
+  <div class="mb-3">
+    <label class="form-label fw-medium" for="id_client">Client</label>
+    {{ form.client }}
+    {% if form.client.errors %}
+      <div class="app-form-error">{{ form.client.errors }}</div>
+    {% endif %}
+  </div>
+{% else %}
+  <div class="mb-3">
+    <div class="text-secondary small text-uppercase fw-semibold mb-1">Client</div>
+    <p class="mb-0 fw-medium">
+      {% if client_for_display %}{{ client_for_display.full_name }}{% endif %}
+    </p>
+    {{ form.client.as_hidden }}
+  </div>
+{% endif %}
+
+<div class="mb-3">
+  <label class="form-label fw-medium" for="id_claim_number">Claim Number</label>
+  {{ form.claim_number }}
+  {% if form.claim_number.errors %}<div class="app-form-error">{{ form.claim_number.errors }}</div>{% endif %}
+</div>
+
+<div class="row g-3">
+  <div class="col-md-6">
+    <label class="form-label fw-medium" for="id_status">Status</label>
+    {{ form.status }}
+    {% if form.status.errors %}<div class="app-form-error">{{ form.status.errors }}</div>{% endif %}
+  </div>
+  <div class="col-md-6">
+    <label class="form-label fw-medium" for="id_date_of_loss">Date of Loss</label>
+    {{ form.date_of_loss }}
+    {% if form.date_of_loss.errors %}<div class="app-form-error">{{ form.date_of_loss.errors }}</div>{% endif %}
+  </div>
+</div>
+
+<div class="mb-3 mt-3">
+  <label class="form-label fw-medium" for="id_insurance_company">Insurance Company</label>
+  {{ form.insurance_company }}
+  {% if form.insurance_company.errors %}<div class="app-form-error">{{ form.insurance_company.errors }}</div>{% endif %}
+</div>
+
+<div class="mb-0">
+  <label class="form-label fw-medium" for="id_description">Description</label>
+  {{ form.description }}
+  {% if form.description.errors %}<div class="app-form-error">{{ form.description.errors }}</div>{% endif %}
+</div>

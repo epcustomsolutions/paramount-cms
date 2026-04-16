@@ -1,0 +1,46 @@
+---
+description: Follow the shared app design system (cards, headers, forms, tables) for consistent UI and CSS-only restyling
+alwaysApply: true
+---
+
+# App UI consistency (design system)
+
+For **all new or changed page-level UI** in this Django app, follow the patterns already established so the product stays cohesive and future visual changes stay **mostly in `static/css/app.css`** (not scattered ad-hoc classes).
+
+## Layout and page chrome
+
+Defined in `static/css/app.css` — prefer these over one-off flex/header stacks:
+
+- **`app-page-title`** — main H1 for a screen.
+- **`app-section-header`** — title row with optional actions (often contains `app-page-title` + buttons).
+- **`app-action-row`** — grouped primary/secondary actions (wraps on small screens).
+- **`app-meta-chip`** — small metadata badges (counts, labels).
+
+## Sections and surfaces
+
+- **`app-card` / `app-card-body` / `app-card-title`** — primary page sections (lists, chart blocks, full-page forms, calendar wrapper).
+- **`app-panel` / `app-panel--compact` / `app-panel-title`** — nested groups *inside* a card (form columns, notes callouts).
+- **`app-list-surface`** — bordered list blocks (e.g. patient rows on client detail).
+- **`app-empty-state`** — dashed placeholder when a list is empty.
+
+Prefer these over ad-hoc `card`, `rounded-*`, `border`, `shadow-sm`, `bg-body-tertiary` unless there is a strong reason.
+
+## Forms and validation
+
+- Use **`form-label`** on field labels (Bootstrap) and **`app-form-error`** for field errors (not inline `text-danger` + random margins).
+- Modal copy that needs muted context: **`app-modal-subtitle`**.
+
+## Tables and data-heavy screens
+
+- Use **`app-table`** on `<table class="table ...">` for shared header/hover/density styling.
+- **DataTables** (clients/patients lists): controls are styled via `div.dataTables_wrapper` rules in `app.css` — do not add competing global overrides unless fixing a specific bug; prefer adjusting the shared `app.css` block.
+
+## Global shell
+
+- **`templates/base.html`** — sticky header, nav **active state** by `request.resolver_match.namespace`, account area; **Bootstrap Icons** are available for small affordances.
+- New nav items: follow the same link + `active` / `aria-current` pattern.
+
+## Judgment
+
+- Use a **card** when a block is a **named section** the user scans as a unit. Keep **modals** for short CRUD (see modals rule); cards are for **persistent page structure**.
+- **Visual change philosophy:** prefer **consistency, spacing, typography rhythm, and token-based styling** over a full rebrand unless explicitly requested. Big “looks different” leaps usually mean a new theme, color system, or component library — call that out before implementing.

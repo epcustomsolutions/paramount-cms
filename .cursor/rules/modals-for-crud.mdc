@@ -1,0 +1,24 @@
+---
+description: Prefer modals (HTMX + Bootstrap) for edit/delete and similar actions instead of full-page forms
+alwaysApply: true
+---
+
+# Modals instead of new pages
+
+When adding or changing **edit**, **delete**, **confirm**, or similar **secondary flows** in this Django app, **prefer a modal** over navigating to a dedicated page—**where it makes sense** (e.g. user stays on a list, detail, or dashboard context).
+
+## Stack
+
+- **Bootstrap 5** modals for chrome (title, body, footer, dismiss).
+- **HTMX** for loading modal content (`hx-get`), submitting (`hx-post`), validation re-swap, and **out-of-band** updates or **`HX-Redirect`** when a full reload or different route is required after success.
+
+## Patterns already in the repo
+
+- **Client detail**: edit/delete client modals with `HX-Redirect` back to overview or client list.
+- **Client detail**: patient add/edit/delete modals with OOB refresh of the patients panel and `closePatientModal` when needed.
+
+Follow these patterns for new features; keep **direct URLs** to full-page forms for bookmarking or rare cases when a modal is a poor fit (very long flows, print views, etc.).
+
+## Scope judgment
+
+Use modals when the action is **short**, **context-preserving**, and **reversible via Cancel**. Prefer a **full page** when the flow is long, needs its own URL for sharing, or modal UX would feel cramped.

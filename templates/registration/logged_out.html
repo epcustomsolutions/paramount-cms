@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Logged Out{% endblock %}
+
+{% block content %}
+  <div class="app-section-header">
+    <h1 class="app-page-title">Logged Out</h1>
+  </div>
+  <div class="app-card mt-3" style="max-width: 520px;">
+    <div class="app-card-body">
+      <p>You have been signed out.</p>
+      <p class="mb-0"><a href="{% url 'login' %}">Sign In Again</a></p>
+    </div>
+  </div>
+{% endblock %}
+

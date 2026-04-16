@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}Clients{% endblock %}
+
+{% block content %}
+  <div class="app-section-header">
+    <h1 class="app-page-title">Clients</h1>
+    <button
+      type="button"
+      class="btn btn-primary btn-sm"
+      hx-get="{% url 'clients:client-create' %}"
+      hx-target="#client-modal-inner"
+      hx-swap="innerHTML"
+      data-bs-toggle="modal"
+      data-bs-target="#client-modal"
+    >
+      New Client
+    </button>
+  </div>
+
+  <div
+    class="modal fade"
+    id="client-modal"
+    tabindex="-1"
+    aria-labelledby="client-modal-label"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content" id="client-modal-inner"></div>
+    </div>
+  </div>
+
+  {% if clients %}
+    <div class="app-card">
+      <div class="app-card-body">
+        <table
+          id="clients-table"
+          class="table table-striped table-hover app-table mb-0"
+          style="width: 100%;"
+        >
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Phone</th>
+              <th>Email</th>
+              <th>Address</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for client in clients %}
+              <tr>
+                <td>
+                  <a href="{% url 'clients:client-detail' client.id %}">{{ client.full_name }}</a>
+                </td>
+                <td>{{ client.phone }}</td>
+                <td>{{ client.email }}</td>
+                <td class="text-break">
+                  {% if client.address %}
+                    {{ client.address|linebreaksbr }}
+                  {% else %}
+                    <span class="text-muted">—</span>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  {% else %}
+    <div class="app-card">
+      <div class="app-card-body">
+        <div class="app-empty-state text-center">
+          <p class="mb-0">No clients found.</p>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+  {% if clients %}
+    <link
+      rel="stylesheet"
+      href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css"
+    />
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        $("#clients-table").DataTable({
+          pageLength: 10,
+          lengthMenu: [10, 25, 50, 100],
+          order: [[0, "asc"]],
+          autoWidth: false,
+        });
+      });
+    </script>
+  {% endif %}
+{% endblock %}

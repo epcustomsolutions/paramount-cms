@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}{% if mode == "edit" %}Edit Claim{% else %}New Claim{% endif %}{% endblock %}
+
+{% block content %}
+  <div class="app-section-header">
+    <h1 class="app-page-title">{% if mode == "edit" %}Edit Claim{% else %}New Claim{% endif %}</h1>
+  </div>
+
+  <div class="app-card mt-3" style="max-width: 700px;">
+    <div class="app-card-body">
+      {% if form.non_field_errors %}
+        <div class="alert alert-danger mb-3">{{ form.non_field_errors }}</div>
+      {% endif %}
+
+      <form method="post">
+        {% csrf_token %}
+        {% include "claims/partials/claim_form_fields.html" with show_client_select=True %}
+        <div class="app-action-row mt-3">
+          <button type="submit" class="btn btn-primary">Save</button>
+          {% if mode == "edit" and claim %}
+            <a class="btn btn-outline-secondary ms-2" href="{% url 'claims:claim-detail' claim.id %}">Back</a>
+          {% else %}
+            <a class="btn btn-outline-secondary ms-2" href="{% url 'clients:client-list' %}">Back to Clients</a>
+          {% endif %}
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}

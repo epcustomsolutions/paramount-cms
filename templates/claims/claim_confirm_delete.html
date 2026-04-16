@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Delete Claim{% endblock %}
+
+{% block content %}
+  <div class="app-section-header">
+    <h1 class="app-page-title text-danger">Delete Claim</h1>
+  </div>
+
+  <div class="app-card mt-3" style="max-width: 600px;">
+    <div class="app-card-body">
+      <p>Are you sure you want to delete claim <strong>{{ claim.claim_number }}</strong>?</p>
+      <p class="text-secondary small">This removes the claim, all associated notes, and documents.</p>
+      <form method="post">
+        {% csrf_token %}
+        <div class="app-action-row">
+          <button type="submit" class="btn btn-danger">Delete Claim</button>
+          <a class="btn btn-outline-secondary ms-2" href="{% url 'clients:client-detail' client_pk %}">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}

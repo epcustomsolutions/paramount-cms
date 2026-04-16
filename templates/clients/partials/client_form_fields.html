@@ -1,0 +1,39 @@
+{# Expects: form #}
+<div class="mb-3">
+  <label class="form-label fw-medium" for="id_first_name">First Name</label>
+  {{ form.first_name }}
+  {% if form.first_name.errors %}<div class="app-form-error">{{ form.first_name.errors }}</div>{% endif %}
+</div>
+
+<div class="mb-3">
+  <label class="form-label fw-medium" for="id_last_name">Last Name</label>
+  {{ form.last_name }}
+  {% if form.last_name.errors %}<div class="app-form-error">{{ form.last_name.errors }}</div>{% endif %}
+</div>
+
+<div class="mb-3">
+  <label class="form-label fw-medium" for="id_phone">Phone</label>
+  {{ form.phone }}
+  {% if form.phone.errors %}<div class="app-form-error">{{ form.phone.errors }}</div>{% endif %}
+</div>
+
+<div class="mb-3">
+  <label class="form-label fw-medium" for="id_email">Email</label>
+  {{ form.email }}
+  {% if form.email.errors %}<div class="app-form-error">{{ form.email.errors }}</div>{% endif %}
+</div>
+
+<div class="mb-3">
+  <label class="form-label fw-medium" for="id_address">Address</label>
+  {{ form.address }}
+  {% if form.address.errors %}<div class="app-form-error">{{ form.address.errors }}</div>{% endif %}
+</div>
+
+<div class="mb-0">
+  <label class="form-label fw-medium" for="id_alerts">Alerts</label>
+  {% if form.alerts.help_text %}
+    <p class="app-modal-subtitle mb-2">{{ form.alerts.help_text }}</p>
+  {% endif %}
+  {{ form.alerts }}
+  {% if form.alerts.errors %}<div class="app-form-error">{{ form.alerts.errors }}</div>{% endif %}
+</div>
