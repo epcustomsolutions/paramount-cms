@@ -136,6 +136,21 @@
         },
         true
       );
+
+      // Clear modal content on hide so the next open doesn't briefly flash the previous modal's HTML
+      // while HTMX is fetching the new content.
+      var modalContainers = [
+        { modal: "client-modal", inner: "client-modal-inner" },
+        { modal: "claim-modal", inner: "claim-modal-inner" },
+      ];
+      modalContainers.forEach(function (pair) {
+        var modalEl = document.getElementById(pair.modal);
+        var innerEl = document.getElementById(pair.inner);
+        if (!modalEl || !innerEl) return;
+        modalEl.addEventListener("hidden.bs.modal", function () {
+          innerEl.innerHTML = "";
+        });
+      });
     })();
   </script>
 {% endblock %}
