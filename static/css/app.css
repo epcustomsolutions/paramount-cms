@@ -222,6 +222,42 @@ table thead th {
   border-color: var(--app-panel-border-color);
 }
 
+/* Keep client claims card compact; scroll claim rows after ~3 items. */
+.client-claims-card {
+  overflow: hidden;
+}
+
+.client-claims-panel {
+  min-height: 0;
+}
+
+/* Outer wrapper: fade is a sibling overlay so it stays pinned to the bottom of the viewport, not the scroll content. */
+.client-claims-scroll-outer {
+  position: relative;
+  min-height: 0;
+}
+
+.client-claims-scroll {
+  max-height: 18.5rem;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.client-claims-bottom-fade {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1.75rem;
+  pointer-events: none;
+  z-index: 2;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0),
+    var(--bs-body-bg, #fff)
+  );
+}
+
 /* Empty / placeholder region */
 .app-empty-state {
   border: 2px dashed var(--app-panel-border-color);
@@ -331,6 +367,14 @@ main.container > * + * {
     flex-wrap: wrap;
     justify-content: flex-start;
     gap: 0.5rem;
+  }
+
+  .client-claims-scroll {
+    max-height: none;
+  }
+
+  .client-claims-bottom-fade {
+    display: none;
   }
 }
 
