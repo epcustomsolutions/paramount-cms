@@ -66,8 +66,12 @@ class ClaimDocumentForm(forms.Form):
 
     def clean_file(self):
         f = self.cleaned_data["file"]
+        max_mb = ClaimDocument.MAX_FILE_SIZE // (1024 * 1024)
         if f.size > ClaimDocument.MAX_FILE_SIZE:
-            raise forms.ValidationError("File size must be 10 MB or less.")
+            actual_mb = f.size / (1024 * 1024)
+            raise forms.ValidationError(
+                f"That file is {actual_mb:.1f} MB. Max upload size is {max_mb} MB."
+            )
         if f.content_type not in ClaimDocument.ALLOWED_CONTENT_TYPES:
             raise forms.ValidationError(
                 "Only PDF, Word (.doc/.docx), and Excel (.xls/.xlsx) files are allowed."

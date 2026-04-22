@@ -46,23 +46,21 @@ def claim_list(request):
     return render(request, "claims/claim_list.html", {"claims": claims})
 
 
+def _claim_detail_context(claim, document_form=None):
+    return {
+        "claim": claim,
+        "notes": claim.notes.select_related("created_by").all(),
+        "documents": claim.documents.select_related("uploaded_by").all(),
+        "document_form": document_form or ClaimDocumentForm(),
+        "document_max_bytes": ClaimDocument.MAX_FILE_SIZE,
+        "document_max_mb": ClaimDocument.MAX_FILE_SIZE // (1024 * 1024),
+    }
+
+
 @login_required
 def claim_detail(request, pk: int):
     claim = get_object_or_404(Claim.objects.select_related("client"), pk=pk)
-    notes = claim.notes.select_related("created_by").all()
-    documents = claim.documents.select_related("uploaded_by").all()
-    document_form = ClaimDocumentForm()
-
-    return render(
-        request,
-        "claims/claim_detail.html",
-        {
-            "claim": claim,
-            "notes": notes,
-            "documents": documents,
-            "document_form": document_form,
-        },
-    )
+    return render(request, "claims/claim_detail.html", _claim_detail_context(claim))
 
 
 @login_required
@@ -245,25 +243,32 @@ def claim_delete(request, pk: int):
 
 @login_required
 def claim_document_upload(request, pk: int):
-    claim = get_object_or_404(Claim, pk=pk)
+    claim = get_object_or_404(Claim.objects.select_related("client"), pk=pk)
 
-    if request.method == "POST":
-        form = ClaimDocumentForm(request.POST, request.FILES)
-        if form.is_valid():
-            f = form.cleaned_data["file"]
-            ClaimDocument.objects.create(
-                claim=claim,
-                uploaded_by=request.user,
-                filename=f.name,
-                content_type=f.content_type,
-                file_data=f.read(),
-                file_size=f.size,
-            )
-            return redirect("claims:claim-detail", pk=claim.pk)
-    else:
-        form = ClaimDocumentForm()
+    if request.method != "POST":
+        return redirect("claims:claim-detail", pk=claim.pk)
 
-    return redirect("claims:claim-detail", pk=claim.pk)
+    form = ClaimDocumentForm(request.POST, request.FILES)
+    if form.is_valid():
+        f = form.cleaned_data["file"]
+        ClaimDocument.objects.create(
+            claim=claim,
+            uploaded_by=request.user,
+            filename=f.name,
+            content_type=f.content_type,
+            file_data=f.read(),
+            file_size=f.size,
+        )
+        return redirect("claims:claim-detail", pk=claim.pk)
+
+    # Re-render the claim detail page with the bound invalid form so the
+    # existing error panel (document_form.file.errors) can display why the
+    # upload was rejected. Silently redirecting hides all feedback.
+    return render(
+        request,
+        "claims/claim_detail.html",
+        _claim_detail_context(claim, document_form=form),
+    )
 
 
 @login_required

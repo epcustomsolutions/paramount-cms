@@ -98,7 +98,11 @@ class ClaimDocument(models.Model):
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     ]
 
-    MAX_FILE_SIZE = 10 * 1024 * 1024  # 10 MB
+    # Vercel serverless functions reject request bodies over 4.5 MB before
+    # Django sees them, so we cap uploads below that (with headroom for
+    # multipart form overhead). The client-side JS in the upload form reads
+    # this same value via a data attribute to keep the UI in sync.
+    MAX_FILE_SIZE = 4 * 1024 * 1024  # 4 MB
 
     claim = models.ForeignKey(Claim, on_delete=models.CASCADE, related_name="documents")
     uploaded_by = models.ForeignKey(

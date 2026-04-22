@@ -171,7 +171,7 @@ STORAGES = {
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-FILE_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024  # 10 MB
+FILE_UPLOAD_MAX_MEMORY_SIZE = 4 * 1024 * 1024  # 4 MB (matches ClaimDocument.MAX_FILE_SIZE)
 
 # Auth redirects: Django defaults LOGIN_REDIRECT_URL to /accounts/profile/, which is not
 # provided by django.contrib.auth.urls — only login/logout/password URLs exist.

@@ -99,9 +99,14 @@
                 name="file"
                 class="form-control"
                 accept=".pdf,.doc,.docx,.xls,.xlsx"
+                data-max-size="{{ document_max_bytes }}"
               />
               <button type="submit" class="btn btn-outline-primary" disabled>Upload</button>
             </div>
+            <div class="form-text small">
+              PDF, Word, or Excel. Max {{ document_max_mb }} MB per file.
+            </div>
+            <div class="app-form-error claim-document-upload-error d-none" role="alert"></div>
             {% if document_form.file.errors %}
               <div class="app-form-error">{{ document_form.file.errors }}</div>
             {% endif %}
@@ -241,12 +246,43 @@
       uploadForms.forEach(function (form) {
         var fileInput = form.querySelector('input[type="file"][name="file"]');
         var submitButton = form.querySelector('button[type="submit"]');
+        var errorEl = form.querySelector(".claim-document-upload-error");
         if (!fileInput || !submitButton) {
           return;
         }
 
+        var maxBytes = parseInt(fileInput.getAttribute("data-max-size") || "0", 10);
+        var maxMb = maxBytes ? Math.round((maxBytes / (1024 * 1024)) * 10) / 10 : 0;
+
+        var showError = function (msg) {
+          if (!errorEl) return;
+          errorEl.textContent = msg;
+          errorEl.classList.remove("d-none");
+        };
+        var clearError = function () {
+          if (!errorEl) return;
+          errorEl.textContent = "";
+          errorEl.classList.add("d-none");
+        };
+
         var syncUploadButton = function () {
-          submitButton.disabled = !(fileInput.files && fileInput.files.length > 0);
+          var hasFile = fileInput.files && fileInput.files.length > 0;
+          if (!hasFile) {
+            clearError();
+            submitButton.disabled = true;
+            return;
+          }
+          var file = fileInput.files[0];
+          if (maxBytes && file.size > maxBytes) {
+            var actualMb = (file.size / (1024 * 1024)).toFixed(1);
+            showError(
+              "That file is " + actualMb + " MB. Max upload size is " + maxMb + " MB."
+            );
+            submitButton.disabled = true;
+            return;
+          }
+          clearError();
+          submitButton.disabled = false;
         };
 
         syncUploadButton();
