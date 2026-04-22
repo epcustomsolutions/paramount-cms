@@ -113,7 +113,19 @@ def client_delete(request, pk: int):
     client = get_object_or_404(Client, pk=pk)
     htmx = _is_htmx(request)
 
+    # Block deletion when the client has any claims. Clients with claims carry
+    # cascaded history (notes, documents, and linked appointments) we don't
+    # want a single misclick to destroy. Users must delete or reassign the
+    # claims first.
+    claim_count = client.claims.count()
+    appointment_count = client.appointments.count()
+    is_blocked = claim_count > 0
+
     if request.method == "POST":
+        if is_blocked:
+            return _render_client_delete_blocked(
+                request, client, claim_count, htmx=htmx
+            )
         client.delete()
         if htmx:
             response = HttpResponse()
@@ -121,11 +133,30 @@ def client_delete(request, pk: int):
             return response
         return redirect("clients:client-list")
 
+    if is_blocked:
+        return _render_client_delete_blocked(
+            request, client, claim_count, htmx=htmx
+        )
+
+    context = {
+        "client": client,
+        "appointment_count": appointment_count,
+    }
+    if htmx:
+        return render(request, "clients/partials/client_delete_modal.html", context)
+    return render(request, "clients/client_confirm_delete.html", context)
+
+
+def _render_client_delete_blocked(request, client, claim_count, *, htmx: bool):
+    context = {"client": client, "claim_count": claim_count}
     if htmx:
         return render(
             request,
-            "clients/partials/client_delete_modal.html",
-            {"client": client},
+            "clients/partials/client_delete_blocked_modal.html",
+            context,
         )
-
-    return render(request, "clients/client_confirm_delete.html", {"client": client})
+    return render(
+        request,
+        "clients/client_confirm_delete.html",
+        {**context, "blocked": True},
+    )

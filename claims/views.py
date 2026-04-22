@@ -227,18 +227,25 @@ def claim_delete(request, pk: int):
             return claims_panel_oob_response(request, client_pk)
         return redirect("clients:client-detail", pk=client_pk)
 
-    if htmx:
-        return render(
-            request,
-            "claims/partials/claim_delete_modal.html",
-            {"claim": claim, "source": source},
-        )
+    # Counts for the confirmation blast-radius copy. Notes and documents
+    # cascade with the claim (they're gone); appointments have claim nulled
+    # out but survive.
+    note_count = claim.notes.count()
+    document_count = claim.documents.count()
+    appointment_count = claim.appointments.count()
+    context = {
+        "claim": claim,
+        "client_pk": client_pk,
+        "source": source,
+        "note_count": note_count,
+        "document_count": document_count,
+        "appointment_count": appointment_count,
+    }
 
-    return render(
-        request,
-        "claims/claim_confirm_delete.html",
-        {"claim": claim, "client_pk": client_pk},
-    )
+    if htmx:
+        return render(request, "claims/partials/claim_delete_modal.html", context)
+
+    return render(request, "claims/claim_confirm_delete.html", context)
 
 
 @login_required

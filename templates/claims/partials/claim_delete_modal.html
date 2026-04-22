@@ -1,4 +1,4 @@
-{# Expects: claim #}
+{# Expects: claim, source, note_count, document_count, appointment_count #}
 <div class="modal-header border-bottom-0 pb-0">
   <h2 class="modal-title h5 mb-0 text-danger">Delete Claim</h2>
   <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -16,9 +16,23 @@
   {% endif %}
   <div class="modal-body pt-2">
     <p class="mb-2">Are you sure you want to delete claim <strong>{{ claim.claim_number }}</strong>?</p>
-    <p class="text-secondary small mb-0">
-      This removes the claim and all associated notes and documents.
-    </p>
+    {% if note_count or document_count %}
+      <p class="text-secondary small mb-2">
+        This will permanently delete
+        {% if note_count %}<strong>{{ note_count }} note{{ note_count|pluralize }}</strong>{% endif %}
+        {% if note_count and document_count %} and {% endif %}
+        {% if document_count %}<strong>{{ document_count }} document{{ document_count|pluralize }}</strong>{% endif %}
+        on this claim.
+      </p>
+    {% endif %}
+    {% if appointment_count %}
+      <p class="text-secondary small mb-0">
+        <strong>{{ appointment_count }} appointment{{ appointment_count|pluralize }}</strong>
+        {{ appointment_count|pluralize:"is,are" }} linked to this claim and will remain on the schedule, but will no longer be tied to a claim.
+      </p>
+    {% else %}
+      <p class="text-secondary small mb-0">This cannot be undone.</p>
+    {% endif %}
   </div>
   <div class="modal-footer border-top-0 pt-0">
     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>

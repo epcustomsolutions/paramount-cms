@@ -1,0 +1,25 @@
+{# Expects: client, claim_count #}
+<div class="modal-header border-bottom-0 pb-0">
+  <h2 class="modal-title h5 mb-0">Cannot Delete Client</h2>
+  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body pt-2">
+  <p class="mb-2">
+    <strong>{{ client.full_name }}</strong> has
+    <strong>{{ claim_count }} claim{{ claim_count|pluralize }}</strong>
+    linked to them.
+  </p>
+  <p class="text-secondary small mb-0">
+    To protect against accidental data loss, clients with claims cannot be
+    deleted. Delete or reassign the claims first, then try again.
+  </p>
+</div>
+<div class="modal-footer border-top-0 pt-0">
+  <a
+    class="btn btn-outline-primary"
+    href="{% url 'clients:client-detail' client.id %}"
+  >
+    View Claims
+  </a>
+  <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+</div>
