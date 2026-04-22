@@ -102,7 +102,8 @@ DATABASES = {
     }
 }
 
-# Render/Postgres compatibility: keep connections open for the lifetime of the worker.
+# Persistent Postgres connections: keep each worker's connection open for
+# the configured duration rather than reconnecting per-request.
 CONN_MAX_AGE = int(os.environ.get('DB_CONN_MAX_AGE', '600'))
 
 
