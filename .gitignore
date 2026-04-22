@@ -16,6 +16,9 @@ staticfiles/
 # static_deploy/ is intentionally not ignored — Vercel build output must be deployable (see build_files.sh).
 media/
 
+# Database backups (contain client PII and uploaded documents — never commit)
+backups/
+
 # Logs
 *.log
 
