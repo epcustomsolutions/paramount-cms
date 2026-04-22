@@ -180,6 +180,15 @@ LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
 
+# Admin URL path. Local/dev defaults to /admin/. In production, set
+# ADMIN_URL_PATH to an unguessable value via the Vercel env vars so automated
+# scanners don't find the login page. Not a secret — defense in depth on top
+# of the superuser password.
+ADMIN_URL_PATH = os.environ.get('ADMIN_URL_PATH', 'admin/').strip().lstrip('/')
+if ADMIN_URL_PATH and not ADMIN_URL_PATH.endswith('/'):
+    ADMIN_URL_PATH += '/'
+
+
 # Basic production hardening.
 if not DEBUG:
     SECURE_SSL_REDIRECT = True
