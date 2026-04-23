@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 import os
+import sys
 from pathlib import Path
 
 import dj_database_url
@@ -102,6 +103,19 @@ DATABASES = {
     }
 }
 
+# Run tests against an in-memory SQLite DB regardless of DATABASE_URL, so
+# `manage.py test` never accidentally creates a test database on the
+# production Neon cluster.
+if 'test' in sys.argv:
+    DATABASES['default'] = {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': ':memory:',
+    }
+    # Skip the hashed-manifest static files backend during tests; it fails
+    # with "Missing staticfiles manifest entry" unless collectstatic has
+    # been run, which adds no value to unit tests.
+    _TEST_STATICFILES_BACKEND = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+
 # Persistent Postgres connections: keep each worker's connection open for
 # the configured duration rather than reconnecting per-request.
 CONN_MAX_AGE = int(os.environ.get('DB_CONN_MAX_AGE', '600'))
@@ -161,6 +175,9 @@ if os.environ.get('VERCEL') or os.environ.get('VERCEL_URL'):
 else:
     _staticfiles_backend = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
+if 'test' in sys.argv:
+    _staticfiles_backend = _TEST_STATICFILES_BACKEND
+
 STORAGES = {
     'staticfiles': {
         'BACKEND': _staticfiles_backend,
@@ -207,6 +224,15 @@ if not DEBUG:
     }
     X_FRAME_OPTIONS = "DENY"
     SECURE_CONTENT_TYPE_NOSNIFF = True
+
+# Django's test client always uses plain http://, so SECURE_SSL_REDIRECT
+# turns every test request into a 301 before the view runs. Disable the
+# redirect and the secure-cookie flags during tests so assertions against
+# real response codes work regardless of DEBUG.
+if 'test' in sys.argv:
+    SECURE_SSL_REDIRECT = False
+    SESSION_COOKIE_SECURE = False
+    CSRF_COOKIE_SECURE = False
 
 CSRF_TRUSTED_ORIGINS = [
     o.strip() for o in os.environ.get('CSRF_TRUSTED_ORIGINS', '').split(',') if o.strip()
