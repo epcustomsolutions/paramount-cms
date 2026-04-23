@@ -225,6 +225,15 @@ if not DEBUG:
     X_FRAME_OPTIONS = "DENY"
     SECURE_CONTENT_TYPE_NOSNIFF = True
 
+# Django's test client always uses plain http://, so SECURE_SSL_REDIRECT
+# turns every test request into a 301 before the view runs. Disable the
+# redirect and the secure-cookie flags during tests so assertions against
+# real response codes work regardless of DEBUG.
+if 'test' in sys.argv:
+    SECURE_SSL_REDIRECT = False
+    SESSION_COOKIE_SECURE = False
+    CSRF_COOKIE_SECURE = False
+
 CSRF_TRUSTED_ORIGINS = [
     o.strip() for o in os.environ.get('CSRF_TRUSTED_ORIGINS', '').split(',') if o.strip()
 ]
