@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 import os
+import sys
 from pathlib import Path
 
 import dj_database_url
@@ -102,6 +103,19 @@ DATABASES = {
     }
 }
 
+# Run tests against an in-memory SQLite DB regardless of DATABASE_URL, so
+# `manage.py test` never accidentally creates a test database on the
+# production Neon cluster.
+if 'test' in sys.argv:
+    DATABASES['default'] = {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': ':memory:',
+    }
+    # Skip the hashed-manifest static files backend during tests; it fails
+    # with "Missing staticfiles manifest entry" unless collectstatic has
+    # been run, which adds no value to unit tests.
+    _TEST_STATICFILES_BACKEND = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+
 # Persistent Postgres connections: keep each worker's connection open for
 # the configured duration rather than reconnecting per-request.
 CONN_MAX_AGE = int(os.environ.get('DB_CONN_MAX_AGE', '600'))
@@ -160,6 +174,9 @@ if os.environ.get('VERCEL') or os.environ.get('VERCEL_URL'):
     _staticfiles_backend = 'whitenoise.storage.CompressedStaticFilesStorage'
 else:
     _staticfiles_backend = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+if 'test' in sys.argv:
+    _staticfiles_backend = _TEST_STATICFILES_BACKEND
 
 STORAGES = {
     'staticfiles': {
