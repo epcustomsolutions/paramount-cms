@@ -79,7 +79,15 @@
                 {{ user.get_username }}
               </span>
               <span class="mx-2 text-muted">|</span>
-              <a href="{% url 'logout' %}" class="text-decoration-none">Log Out</a>
+              <form method="post" action="{% url 'logout' %}" class="d-inline">
+                {% csrf_token %}
+                <button
+                  type="submit"
+                  class="btn btn-link p-0 align-baseline text-decoration-none"
+                >
+                  Log Out
+                </button>
+              </form>
             {% else %}
               <a href="{% url 'login' %}" class="text-decoration-none">
                 <i class="bi bi-box-arrow-in-right me-1" aria-hidden="true"></i>
